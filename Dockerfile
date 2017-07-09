@@ -25,3 +25,15 @@ RUN curl --silent --show-error https://getcomposer.org/installer | php
 RUN ["/bin/bash", "-c", "mv /tmp/composer.phar /usr/bin/composer"]
 WORKDIR /root
 
+# Add PHPUnit and recommended dependencies
+RUN composer require "phpunit/phpunit:~6.2" --prefer-source --no-interaction \
+    && composer require "phpunit/dbunit" --prefer-source --no-interaction
+
+# Create a phpunit example for testing:
+COPY examples /root/examples
+
+# Expose port 80 for apache to the host machine
+EXPOSE 80
+
+# Mount apache web folder for testing
+VOLUME /var/www/html
