@@ -4,16 +4,12 @@
 
 FROM php:7.1.6-apache
 
-# Preset PHP.ini values and prompt for root user.
+# Preset PHP.ini values.
 COPY config/php.ini /usr/local/etc/php/
-COPY config/.bashrc /root/.bashrc
-
-# Overwrite the entry point (it's apache logs by default in parent image)
-ENTRYPOINT ["/bin/bash"]
 
 # Adding dependencies and tools
 RUN apt-get update && apt-get install -y \
-        apt-utils vim git zip
+        apt-utils sudo vim git zip
 
 # Adding Xdebug
 RUN pecl install xdebug-2.5.5 \
@@ -23,17 +19,33 @@ RUN pecl install xdebug-2.5.5 \
 WORKDIR /tmp
 RUN curl --silent --show-error https://getcomposer.org/installer | php
 RUN ["/bin/bash", "-c", "mv /tmp/composer.phar /usr/bin/composer"]
-WORKDIR /root
+
+# Add user to not use root during testing
+RUN useradd --create-home --no-log-init --shell /bin/bash tester \
+    && echo 'tester:testerpwd' | chpasswd \
+    && adduser tester sudo
+
+# Add some useful stuff to the user prompt:
+COPY config/.bashrc /home/tester/.bashrc
+
+# Default directory entry for the image:
+WORKDIR /home/tester
 
 # Add PHPUnit and recommended dependencies
-RUN composer require "phpunit/phpunit:~6.2" --prefer-source --no-interaction \
-    && composer require "phpunit/dbunit" --prefer-source --no-interaction
+RUN su tester -c "composer require 'phpunit/phpunit:~6.2' --prefer-source --no-interaction" \
+    && su tester -c "composer require 'phpunit/dbunit' --prefer-source --no-interaction"
+
+# Default user for container interaction
+USER tester
 
 # Create a phpunit example for testing:
-COPY examples /root/examples
+COPY examples /home/tester/examples
 
 # Expose port 80 for apache to the host machine
 EXPOSE 80
 
 # Mount apache web folder for testing
 VOLUME /var/www/html
+
+# Overwrite the entry point (it's apache logs by default in parent image)
+ENTRYPOINT ["/bin/bash"]

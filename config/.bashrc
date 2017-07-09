@@ -18,7 +18,9 @@ if [ $SHELL = "/bin/bash" -a -x /usr/bin/dircolors ]; then
 fi
 
 # Adding Composer global tools for root user to the path:
-PATH=/root/vendor/bin:$PATH
+PATH=/home/tester/vendor/bin:$PATH
+
+alias phpunit='/home/tester/vendor/bin/phpunit --colors'
 
 # Some more alias to avoid making mistakes:
 # alias rm='rm -i'
