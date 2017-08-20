@@ -84,3 +84,8 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# Adding Composer global tools for root user to the path:
+PATH=/home/tester/vendor/bin:$PATH
+
+alias phpunit='/home/tester/vendor/bin/phpunit --colors'

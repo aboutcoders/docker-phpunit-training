@@ -31,9 +31,6 @@ RUN useradd --create-home --no-log-init --shell /bin/bash tester \
     && echo 'tester:testerpwd' | chpasswd \
     && adduser tester sudo
 
-# Add some useful stuff to the user prompt:
-COPY config/.bashrc /home/tester/.bashrc
-
 # Default directory entry for the image:
 WORKDIR /home/tester
 
