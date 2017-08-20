@@ -9,7 +9,13 @@ COPY config/php.ini /usr/local/etc/php/
 
 # Adding dependencies and tools
 RUN apt-get update && apt-get install -y \
-        apt-utils sudo vim git zip
+        apt-utils \
+        sudo \
+        vim \
+        git \
+        zip \
+        wget \
+        zsh
 
 # Adding Xdebug
 RUN pecl install xdebug-2.5.5 \
@@ -41,6 +47,13 @@ USER tester
 # Create a phpunit example for testing:
 COPY examples /home/tester/examples
 
+# Adding oh-my-zsh
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+
+# Adding specific theme for oh-my-zsh in order to clarify commands during training:
+COPY config/oh-my-zsh/bullet-train.zsh-theme /home/tester/.oh-my-zsh/custom/themes/bullet-train.zsh-theme
+COPY config/oh-my-zsh/.zshrc /home/tester/.zshrc
+
 # Expose port 80 for apache to the host machine
 EXPOSE 80
 
@@ -48,4 +61,4 @@ EXPOSE 80
 VOLUME /var/www/html
 
 # Overwrite the entry point (it's apache logs by default in parent image)
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/zsh"]
