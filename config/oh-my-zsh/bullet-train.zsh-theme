@@ -30,7 +30,7 @@ if [ ! -n "${BULLETTRAIN_PROMPT_ORDER+1}" ]; then
 #    aws
 #    go
 #    elixir
-    git
+#    git
 #    hg
     cmd_exec_time
   )
